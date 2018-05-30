@@ -5,6 +5,7 @@
 #![cfg_attr(feature = "dev", plugin(clippy))]
 #![crate_type = "lib"]
 #![doc(html_root_url = "https://docs.rs/ipnetwork/0.13")]
+#![feature(rust_2018_preview)]
 
 extern crate serde;
 #[macro_use]
