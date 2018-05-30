@@ -1,3 +1,5 @@
+cargo-features = ["edition"]
+
 [package]
 name = "ipnetwork"
 version = "0.13.0" # When updating version, also modify html_root_url in the lib.rs
@@ -9,6 +11,7 @@ keywords = ["network", "ip", "address"]
 readme = "README.md"
 documentation = "https://docs.rs/ipnetwork/"
 categories = ["network-programming", "os"]
+edition = "2018"
 
 [dependencies]
 clippy = {version = "0.0.104", optional = true}
