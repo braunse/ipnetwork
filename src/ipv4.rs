@@ -15,13 +15,43 @@ pub struct Ipv4Network {
     prefix: u8,
 }
 
+mod deserialize_ipv4network {
+    use super::*;
+    use serde::de::*;
+    use std::fmt;
+
+    pub struct IPv4NetworkVisitor;
+
+    impl<'de> Visitor<'de> for IPv4NetworkVisitor {
+        type Value = Ipv4Network;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("IPv4 Network")
+        }
+
+        fn visit_str<E>(self, v: &str) -> Result<Ipv4Network, E> where
+            E: Error, {
+            Ipv4Network::from_str(v).map_err(de::Error::custom)
+        }
+
+        fn visit_borrowed_str<E>(self, v: &'de str) -> Result<Ipv4Network, E> where
+            E: Error, {
+            self.visit_str(v)
+        }
+
+        fn visit_string<E>(self, v: String) -> Result<Ipv4Network, E> where
+            E: Error, {
+            self.visit_str(v.as_str())
+        }
+    }
+}
+
 impl<'de> Deserialize<'de> for Ipv4Network {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
-        let s = <&str>::deserialize(deserializer)?;
-        Ipv4Network::from_str(s).map_err(de::Error::custom)
+        deserializer.deserialize_str(deserialize_ipv4network::IPv4NetworkVisitor)
     }
 }
 

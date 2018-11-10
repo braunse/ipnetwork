@@ -17,13 +17,43 @@ pub struct Ipv6Network {
     prefix: u8,
 }
 
+mod deserialize_ipv6network {
+    use super::*;
+    use serde::de::*;
+    use std::fmt;
+
+    pub struct IPv6NetworkVisitor;
+
+    impl<'de> Visitor<'de> for IPv6NetworkVisitor {
+        type Value = Ipv6Network;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("IPv4 Network")
+        }
+
+        fn visit_str<E>(self, v: &str) -> Result<Ipv6Network, E> where
+            E: Error, {
+            Ipv6Network::from_str(v).map_err(de::Error::custom)
+        }
+
+        fn visit_borrowed_str<E>(self, v: &'de str) -> Result<Ipv6Network, E> where
+            E: Error, {
+            self.visit_str(v)
+        }
+
+        fn visit_string<E>(self, v: String) -> Result<Ipv6Network, E> where
+            E: Error, {
+            self.visit_str(v.as_str())
+        }
+    }
+}
+
 impl<'de> Deserialize<'de> for Ipv6Network {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
-        let s = <&str>::deserialize(deserializer)?;
-        Ipv6Network::from_str(s).map_err(de::Error::custom)
+        deserializer.deserialize_str(deserialize_ipv6network::IPv6NetworkVisitor)
     }
 }
 
